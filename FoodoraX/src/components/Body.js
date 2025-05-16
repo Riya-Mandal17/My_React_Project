@@ -4,12 +4,19 @@ import Shimmer from "./Shimmer";
 import { useOutletContext } from "react-router-dom";
 import { Link } from "react-router-dom";
 import useFetchRastaurants from "../Utils/useFetchRastaurants";
+import useOnlineStatus from "../Utils/useOnlineStatus";
 
 const Body = () => {
 
   // hookes : Local State variables - normal js variable
   const [listOfRestaurants,setListOfRestaurants ] = useState([]);
-  const listOfRestaurantsname = useFetchRastaurants();
+  let resval = useFetchRastaurants();
+  console.log(resval);
+
+  useEffect(()=>{
+    if(!resval) return <Shimmer />;
+    setListOfRestaurants(resval);
+  },[resval]);
   
   const { searchText } = useOutletContext();
 
@@ -27,9 +34,14 @@ const Body = () => {
   }, [searchText]);
 
 
+  const onlineStatus = useOnlineStatus();
+  if(onlineStatus === false) return (<h1>You are now offline !!!</h1>);
+
   if (!listOfRestaurants|| listOfRestaurants.length === 0) {
     return <Shimmer />;
   }
+  
+
 
   return (
     <div className="body">
